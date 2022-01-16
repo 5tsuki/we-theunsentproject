@@ -33,57 +33,52 @@ const colors = {
   "peach": "252, 209, 166"
 }
 
-const minutes = 1
+const minutes = 1 // should use wallpaper engine event listener to get custom amount of minutes
 
-setInterval(async () => {
-  await main();
-}, 60000 * minutes);
+const getRandomPage = (numberOfEntries) => {
+  return Math.floor(Math.random() * Math.floor(numberOfEntries / 45))
+}
+
+const fetchApi = async () => {
+  const numberOfEntries = localStorage.getItem("theunsentproject") ? localStorage.getItem("theunsentproject") : 0
+
+  const uri = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://app-api.theunsentproject.com/posts?skip=${getRandomPage(numberOfEntries)}`)}`
+
+  const data = await fetch(uri)
+    .then(response => {
+      if (response.ok) return response.json()
+      throw new Error('Network response was not ok.')
+    })
+    .then(data => JSON.parse(data.contents))
+    .catch(err => {
+      throw new Error(err.message)
+    })
+
+  localStorage.setItem("theunsentproject", data.count)
+
+  return data.posts
+}
+
+const randomPost = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+const getTextColor = (red, green, blue) => {
+  return (red * 0.299 + green * 0.587 + blue * 0.114) > 186 ? "#000000" : "#ffffff"
+}
+
+void (async () => {
+  await main()
+  setInterval(async () => {
+    await main()
+  }, 60000 * minutes)
+})()
 
 async function main() {
-  let count = 0
-
   try {
-    const data = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://app-api.theunsentproject.com/posts')}`)
-      .then(response => {
-        if (response.ok) return response.json()
-        throw new Error('Network response was not ok.')
-      })
-      .then(data => JSON.parse(data.contents))
-      .catch(_ => 0)
-
-
-    count = data.count
-
-    if (count === 0) {
-      throw new Error('Count was 0')
-    }
-
-    if (isNaN(count)) {
-      throw new Error('Count is not a number')
-    }
-
-    const pages = Math.floor(count / 45)
-
-    const randomPage = Math.floor(Math.random() * pages)
-
-    const uri = `https://app-api.theunsentproject.com/posts?skip=${randomPage}`
-
-    const pageData = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(uri)}`)
-      .then(response => {
-        if (response.ok) return response.json()
-        throw new Error('Network response was not ok.')
-      })
-      .then(data => JSON.parse(data.contents))
-      .catch(_ => { throw new Error("Error while calling api second time") })
-
-    console.log(pageData)
-
-    const items = pageData.posts
-
-    const randItem = items[Math.floor(Math.random() * items.length)]
-
-    setWallpaper(randItem)
-
+    const posts = await fetchApi()
+    const post = randomPost(posts)
+    setWallpaper(post)
   } catch (err) {
     console.error(err)
   }
@@ -98,8 +93,6 @@ function setWallpaper(item) {
     oldPostSlug,
     updatedAt } = item
 
-console.log(color)
-
   const nameHtml = document.getElementById("name")
   const messageHtml = document.getElementById("message")
   const cardContent = document.getElementById("card-content")
@@ -110,9 +103,5 @@ console.log(color)
 
   const [red, green, blue] = colors[color].split(",")
 
-  if ((red * 0.299 + green * 0.587 + blue * 0.114) > 186) {
-    messageHtml.style.color = "#000000"
-  } else { 
-    messageHtml.style.color = "#ffffff"
-  } 
+  messageHtml.style.color = getTextColor(red, green, blue)
 }

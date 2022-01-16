@@ -5,6 +5,7 @@ Wallpaper Engine implementation of theunsentproject.com, that updates every 60 s
 All credits go to #unsentproject and who submitted a message on the site.
 
 ## TODO
-- [ ] Tide up the code
+- [x] Tide up the code
+- [x] Improve performance
 - [ ] Implement Wallpaper Engine User Properties
 - [ ] Avoid using proxy for CORS 
