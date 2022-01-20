@@ -7,5 +7,5 @@ All credits go to #unsentproject and who submitted a message on the site.
 ## TODO
 - [x] Tide up the code
 - [x] Improve performance
-- [ ] Implement Wallpaper Engine User Properties
+- [x] Implement Wallpaper Engine User Properties
 - [ ] Avoid using proxy for CORS 

@@ -1,0 +1,53 @@
+{
+	"contentrating" : "Everyone",
+	"description" : "wallpaper engine implementation of theunsentproject.com, that updates every 60 seconds. all credits go to #unsentproject and who submitted a message on the site.\r\n\r\nyou can find the code: [url=https://github.com/nilaerdna/we-theunsentproject]here[/url]\r\n\r\n[quote=TheUnsentProject] A Collection Of Unsent Text Messages To First Loves [/quote]",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"background" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "Background Color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"delay" : 
+			{
+				"fraction" : false,
+				"index" : 1,
+				"max" : 60,
+				"min" : 10,
+				"order" : 101,
+				"text" : "Delay (seconds)",
+				"type" : "slider",
+				"value" : 60
+			},
+			"name" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "name",
+				"type" : "textinput",
+				"value" : ""
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			}
+		}
+	},
+	"preview" : "preview.jpg",
+	"tags" : [ "Unspecified" ],
+	"title" : "TheUnsentProject x atlantis",
+	"type" : "web",
+	"version" : 2,
+	"visibility" : "public",
+	"workshopid" : "2714153882",
+	"workshopurl" : "steam://url/CommunityFilePage/2714153882"
+}

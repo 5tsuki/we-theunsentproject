@@ -33,16 +33,32 @@ const colors = {
   "peach": "252, 209, 166"
 }
 
-const minutes = 1 // should use wallpaper engine event listener to get custom amount of minutes
+let seconds = 10
+let toName = ""
+let interval = null
 
 const getRandomPage = (numberOfEntries) => {
   return Math.floor(Math.random() * Math.floor(numberOfEntries / 45))
 }
 
+const randomPost = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+const getTextColor = (red, green, blue) => {
+  return (red * 0.299 + green * 0.587 + blue * 0.114) > 186 ? "#000000" : "#ffffff"
+}
+
+const floatToHex = (red, green, blue) => {
+  const floatToRgb = (n) => {
+    return (Math.round(parseFloat(n).toFixed(2) * 255).toString(16).padStart(2, '0'))
+  }
+  return `#${floatToRgb(red)}${floatToRgb(green)}${floatToRgb(blue)}`
+}
+
 const fetchApi = async () => {
   const numberOfEntries = localStorage.getItem("theunsentproject") ? localStorage.getItem("theunsentproject") : 0
-
-  const uri = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://app-api.theunsentproject.com/posts?skip=${getRandomPage(numberOfEntries)}`)}`
+  const uri = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://app-api.theunsentproject.com/posts?searchQuery=${toName}&skip=${getRandomPage(numberOfEntries)}`)}`
 
   const data = await fetch(uri)
     .then(response => {
@@ -57,31 +73,6 @@ const fetchApi = async () => {
   localStorage.setItem("theunsentproject", data.count)
 
   return data.posts
-}
-
-const randomPost = (arr) => {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
-
-const getTextColor = (red, green, blue) => {
-  return (red * 0.299 + green * 0.587 + blue * 0.114) > 186 ? "#000000" : "#ffffff"
-}
-
-void (async () => {
-  await main()
-  setInterval(async () => {
-    await main()
-  }, 60000 * minutes)
-})()
-
-async function main() {
-  try {
-    const posts = await fetchApi()
-    const post = randomPost(posts)
-    setWallpaper(post)
-  } catch (err) {
-    console.error(err)
-  }
 }
 
 function setWallpaper(item) {
@@ -105,3 +96,44 @@ function setWallpaper(item) {
 
   messageHtml.style.color = getTextColor(red, green, blue)
 }
+
+async function main() {
+  try {
+    const posts = await fetchApi()
+    const post = randomPost(posts)
+    setWallpaper(post)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const setBackgroundColor = (hex) => {
+  document.getElementById("body").style.backgroundColor = hex
+}
+
+window.wallpaperPropertyListener = {
+  applyUserProperties: function (properties) {
+    if (properties.background) {
+      const [red, green, blue] = properties.background.value.split(" ")
+      setBackgroundColor(floatToHex(red, green, blue))
+    }
+    if (properties.delay) {
+      seconds = properties.delay.value
+      clearInterval(interval)
+      interval = setInterval(async () => {
+        await main()
+      }, 1000 * seconds)
+    }
+    if (properties.name) {
+      toName = properties.name.value
+      localStorage.setItem("theunsentproject", 0)
+    }
+  },
+}
+
+void (async () => {
+  await main()
+  interval = setInterval(async () => {
+    await main()
+  }, 1000 * seconds)
+})()
